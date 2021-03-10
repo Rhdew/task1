@@ -56,12 +56,11 @@ const insertData = async () => {
   );
 };
 
-insertData()
-  .then((response) => {
-    console.log(response);
+insertData().then(() => {
+    console.log("data succesfully saved");
   })
-  .catch((err) => {
-    throw err;
+  .catch(() => {
+    console.log("some error");
   });
 
 const deleteData = async () => {
@@ -80,10 +79,9 @@ const deleteData = async () => {
     })
   );
 };
-deleteData()
-  .then((response) => {
-    console.log(response);
+deleteData().then(() => {
+    console.log("data succesfully deleted");
   })
-  .catch((err) => {
-    throw err;
+  .catch(() => {
+    console.log("some error");
   });
