@@ -2,10 +2,23 @@ const mongoose = require("mongoose");
 const { User, Profile } = require("./model");
 const bcrypt = require("bcrypt");
 require("dotenv").config();
-const connection = mongoose.connect(process.env.DATABASE_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+mongoose
+  .connect(process.env.DATABASE_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    reconnectTries: 30,
+    reconnectInterval: 500,
+    poolSize: 10,
+    bufferMaxEntries: 0,
+    autoIndex: true,
+    useCreateIndex: true,
+  })
+  .then(() => {
+    console.log("Link established to database");
+  })
+  .catch(() => {
+    console.log("No link to database.");
+  });
 
 let data = [];
 
@@ -21,8 +34,6 @@ for (let i = 0; i < 5; i++) {
   data.push(tempUser);
 }
 
-console.log(data);
-
 let dob = ["25/12/2000", "23/11/1989", "30/1/1985", "5/5/2005", "4/7/2010"];
 
 const insertData = async () => {
@@ -37,12 +48,42 @@ const insertData = async () => {
           phone: 7895632155,
         };
         let newprofile = new Profile(tempprofile);
-        const saveprofile = await newprofile.save();
+        await newprofile.save();
       } catch (err) {
-        console.log(err);
+        throw err;
       }
     })
   );
 };
 
-insertData();
+insertData()
+  .then((response) => {
+    console.log(response);
+  })
+  .catch((err) => {
+    throw err;
+  });
+
+const deleteData = async () => {
+  let user = await Profile.find().populate("userId");
+
+  await Promise.all(
+    user.map(async (record, index) => {
+      try {
+        let age = new Date().getFullYear() - parseInt(record.dob.split("/")[2]);
+        if (age >= 25) {
+          await User.deleteOne({ _id: record.userId });
+        }
+      } catch (err) {
+        throw err;
+      }
+    })
+  );
+};
+deleteData()
+  .then((response) => {
+    console.log(response);
+  })
+  .catch((err) => {
+    throw err;
+  });
