@@ -25,13 +25,13 @@ let data = [];
 for (let i = 0; i < 5; i++) {
   let pass = bcrypt.hashSync(`rajat ${i}`, 10);
 
-  const tempUser = {
+  const newCreatedUser = {
     firstName: `rajat ${i}`,
     lastName: "verma",
     email: `rajat${i}@gmail.com`,
     password: pass,
   };
-  data.push(tempUser);
+  data.push(newCreatedUser);
 }
 
 let dob = ["25/12/2000", "23/11/1989", "30/1/1985", "5/5/2005", "4/7/2010"];
@@ -42,13 +42,17 @@ const insertData = async () => {
       try {
         let newuser = new User(record);
         const saveuser = await newuser.save();
-        let tempprofile = {
+        let newCreatedProfile = {
           userId: saveuser._id,
           dob: dob[index],
+          createdAt: new Date(),
           phone: 7895632155,
         };
-        let newprofile = new Profile(tempprofile);
+        let newprofile = new Profile(newCreatedProfile);
         await newprofile.save();
+        return {
+          newCreatedProfile
+        };
       } catch (err) {
         throw err;
       }
@@ -56,30 +60,31 @@ const insertData = async () => {
   );
 };
 
-insertData().then(() => {
+insertData()
+  .then(() => {
     console.log("data succesfully saved");
   })
   .catch(() => {
     console.log("some error");
   });
 
-const deleteData = async () => {
-  let user = await Profile.find().populate("userId");
-
-  await Promise.all(
-    user.map(async (record, index) => {
-      try {
+const removeUserOlderThan25 = async () => {
+  try {
+    let user = await Profile.find().populate("userId");
+    await Promise.all(
+      user.map(async (record, index) => {
         let age = new Date().getFullYear() - parseInt(record.dob.split("/")[2]);
         if (age >= 25) {
           await User.deleteOne({ _id: record.userId });
         }
-      } catch (err) {
-        throw err;
-      }
-    })
-  );
+      })
+    );
+  } catch (err) {
+    throw err;
+  }
 };
-deleteData().then(() => {
+removeUserOlderThan25()
+  .then(() => {
     console.log("data succesfully deleted");
   })
   .catch(() => {
