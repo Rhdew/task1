@@ -1,0 +1,25 @@
+{
+  "name": "insertdemo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "insert.js",
+  "scripts": {
+    "start": "node insert.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rhdew/task1.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Rhdew/task1/issues"
+  },
+  "homepage": "https://github.com/Rhdew/task1#readme",
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "dotenv": "^8.2.0",
+    "mongoose": "^5.11.19"
+  }
+}
